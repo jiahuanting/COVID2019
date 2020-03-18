@@ -130,5 +130,5 @@ def bottomCard_quegong(day):
     with open("./stat/data/quegong_bottomCard.json","w",encoding="utf-8") as jsonFile:
         json.dump({"dateList":res_date,"value":res_value}, jsonFile, ensure_ascii=False, indent=4)
 
-# bottomCard_fugong(20200312)
-bottomCard_quegong(20200312)
+bottomCard_fugong(20200316)
+bottomCard_quegong(20200316)

@@ -17,7 +17,7 @@ provinces = [
 ]
 
 
-def calFugong(start = 20200210, end = 20200312):
+def calFugong(start = 20200210, end = 20200316):
     if platform.system() == "Windows":
         path = "E:/jupyter/nCov/baiduqianxi/scp/data/city"
     else:

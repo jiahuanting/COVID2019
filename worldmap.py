@@ -61,7 +61,7 @@ class MyWriter():
             l.append(self.cnt)
         self.data.append(l)
     def save(self):
-        with open(self.path,'w',newline='',encoding='gbk') as f:
+        with open(self.path,'w',newline='',encoding='utf-8') as f:
             writer=csv.writer(f)
             writer.writerow(self.header)
             writer.writerows(self.data)
@@ -354,7 +354,7 @@ def worlddata():
                 },
                 "predict": {
                     "dateList": predict_dateList,
-                    "value": pred
+                    "value": predict
                 },
                 "remain": remain,
                 "daily_new":pred_daily_new,
@@ -443,7 +443,7 @@ def get_one(name,data,geo_data,pop):
     # prop['history']=actual['value']
     prop['increase']=round(actual['value'][-1]-actual['value'][0],3)
     f_ind=future_ind(actual['dateList'],predict['dateList'])
-    f_increase10=round(predict['value'][ind+10-1]-predict['value'][ind])
+    f_increase10=round(predict['value'][f_ind+10-1]-predict['value'][f_ind])
     prop['future_increase10']=f_increase10
     prop['future_rate10']=round(f_increase10/pop*1000000,3)
     prop['scale']=predict['value'][-1]

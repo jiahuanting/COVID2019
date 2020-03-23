@@ -315,19 +315,19 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    # today=20200320
-    # print(today)
-    # bottomCard_quegong(today)
-    # bottomCard_fugong(today)
-    # calFugong(start=20200210, end=today)
-    # calQuegong(start=20200210,end=today)
-    # sideCard(today)
-    # assert_date()
+    today=20200321
+    print(today)
+    bottomCard_quegong(today)
+    bottomCard_fugong(today)
+    calFugong(start=20200210, end=today)
+    calQuegong(start=20200210,end=today)
+    sideCard(today)
+    assert_date()
 
-    # left_table()
-    # right_bars()
-    # histroy_fugong_quegong_table()
-    # china_map('fugong')
-    # china_map('quegong')
+    left_table()
+    right_bars()
+    histroy_fugong_quegong_table()
+    china_map('fugong')
+    china_map('quegong')
 
-    # world_data_main()
+    world_data_main()

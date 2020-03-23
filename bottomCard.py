@@ -67,8 +67,8 @@ def bottomCard_fugong(day):
     res_value = []
     for key, value in zip(dateList, temp):
         # 去掉周末
-        if datetime.datetime.strptime(key,"%Y-%m-%d").weekday() > 4:
-            continue
+        # if datetime.datetime.strptime(key,"%Y-%m-%d").weekday() > 4:
+        #     continue
         res_date.append(key)
         res_value.append(round(value, 3))
     with open("./stat/data/fugong_bottomCard.json","w",encoding="utf-8") as jsonFile:
@@ -130,5 +130,6 @@ def bottomCard_quegong(day):
     with open("./stat/data/quegong_bottomCard.json","w",encoding="utf-8") as jsonFile:
         json.dump({"dateList":res_date,"value":res_value}, jsonFile, ensure_ascii=False, indent=4)
 
-bottomCard_fugong(20200316)
-bottomCard_quegong(20200316)
+if __name__=='__main__':
+    bottomCard_fugong(20200316)
+    bottomCard_quegong(20200316)

@@ -54,7 +54,7 @@ def calFugong(start = 20200210, end = 20200316):
         name = ""
         for i in cities_:
             if i in city:
-                name = i
+                name = city
                 break
         if name:
             cityList.append(name)
@@ -71,4 +71,5 @@ def calFugong(start = 20200210, end = 20200316):
     with open("./stat/data/fugong_daily.json", "w", encoding="utf-8") as jsonFile:
         json.dump({"data":res,"city":cityList}, jsonFile, ensure_ascii=False)
 
-calFugong()
+if __name__=='__main__':
+    calFugong()

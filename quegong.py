@@ -63,7 +63,7 @@ def calQuegong(start = 20200210, end = 20200316):
         name = ""
         for i in cities_:
             if i in city:
-                name = i
+                name = city
                 break
         if name:
             cityList.append(name)
@@ -80,5 +80,5 @@ def calQuegong(start = 20200210, end = 20200316):
         json.dump({"data":res,"city":cityList}, jsonFile, ensure_ascii=False)    
 
 
-
-calQuegong()
+if __name__=='__main__':
+    calQuegong()

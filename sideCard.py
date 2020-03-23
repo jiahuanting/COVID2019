@@ -48,4 +48,5 @@ def sideCard(day):
     with open("./stat/data/sideCard.json", "w", encoding="utf-8") as jsonFile:
         json.dump({"in":netin, "out":netout}, jsonFile, ensure_ascii=False)
 
-sideCard(20200316)
+if __name__=='__main__':
+    sideCard(20200316)

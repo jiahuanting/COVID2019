@@ -25,9 +25,6 @@ provinces = [
 ]
 
 
-
-
-
 def merge():
     with open("./stat/data/fugong_daily.json","r",encoding="utf-8") as jsonFile:
         fugong_daily = json.loads(jsonFile.read())

@@ -15626,7 +15626,7 @@
             "type": "Feature",
             "id": "CZE",
             "properties": {
-                "name": "Czech Republic"
+                "name": "Czech Rep."
             },
             "geometry": {
                 "type": "Polygon",
@@ -16216,7 +16216,7 @@
             "type": "Feature",
             "id": "DOM",
             "properties": {
-                "name": "Dominican Republic"
+                "name": "Dominican Rep."
             },
             "geometry": {
                 "type": "Polygon",

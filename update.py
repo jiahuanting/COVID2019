@@ -4,7 +4,7 @@ from bottomCard import bottomCard_fugong,bottomCard_quegong
 from fugong import calFugong
 from quegong import calQuegong
 from sideCard import sideCard
-from worldmap import world_data_main
+# from worldmap import world_data_main
 from time import time,strftime,localtime
 import csv
 import json
@@ -329,5 +329,3 @@ if __name__=='__main__':
     histroy_fugong_quegong_table()
     china_map('fugong')
     china_map('quegong')
-
-    world_data_main()

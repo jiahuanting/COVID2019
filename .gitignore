@@ -2,3 +2,4 @@ results-old
 feed
 *.zip
 *__pycache__*
+*.tar.gz

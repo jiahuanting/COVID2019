@@ -235,11 +235,11 @@ class EPI_Reader():
 
         props={'name':country}
         if "全国" in filename:
-            all_dates=csvData_hb['Date'].to_list()
+            all_dates=csvData_hb['Date'].tolist()
             func=get_china
             props['scale']=func(csvData,'Predict_confirm','2020/06/14')
         else:
-            all_dates=csvData['Date'].to_list()
+            all_dates=csvData['Date'].tolist()
             func=get_once
             props['scale']=func(csvData,'Predict_confirm',all_dates[-1])
 
@@ -330,6 +330,8 @@ def dump_geo_json():
     features=[]
     for props in map_data:
         name=props['name']
+        if name in ['Global (except China)']:
+            continue
         node=geo_data[name]
         node['properties']=props
         features.append(node)

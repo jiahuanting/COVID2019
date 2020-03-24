@@ -319,7 +319,6 @@ if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
     today=20200322
-    print(today)
     bottomCard_quegong(today)
     bottomCard_fugong(today)
     calFugong(start=20200210, end=today)
@@ -332,3 +331,6 @@ if __name__=='__main__':
     histroy_fugong_quegong_table()
     china_map('fugong')
     china_map('quegong')
+    
+    print(today)
+    

@@ -69,13 +69,22 @@ class MyWriter():
             if self.lift is not None:
                 liftind,liftfliter=self.lift
                 for d in self.data:
-                    cnt=cnt+1
                     if d[liftind]==liftfliter:
-                        writer.writerow(d+[cnt])
+                        cnt=cnt+1
+                        if self.index is not None:
+                            writer.writerow(d+[cnt])
+                        else:
+                            writer.writerow(d)
                     else:
-                        remain.append(d+[cnt])
-            writer.writerows(self.data)
-            
+                        remain.append(d)
+            else:
+                remain=self.data
+            for d in remain:
+                cnt=cnt+1
+                if self.index is not None:
+                    writer.writerow(d+[cnt])
+                else:
+                    writer.writerow(d)
 
 class XLSReader():
     def __init__(self,name,sheet_ind):
@@ -256,7 +265,7 @@ class EPI_Reader():
         self.props=props      
         return True
 
-    def country_level(self,wt1,wt2,country,cofrow,recrow,dthrow):
+    def country_level(self,wt1,wt2,wt3,country,cofrow,recrow,dthrow):
         country=self.ch2en[country]
         flg=False
         for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
@@ -297,6 +306,9 @@ class EPI_Reader():
         props['current']=cofrow[self.current_date]
         props['name']=country
         self.map_data.append(props)
+
+        wt3.insert([cofrow[self.current_date],country])
+
         print(country,'ok')
 
     def main(self):
@@ -307,6 +319,7 @@ class EPI_Reader():
         wt1=MyWriter(feed_root+'全球疫情预测.csv',['日期','预测确诊','预测在治','预测新增','预测死亡'\
         ,'预测治愈','实际确诊','实际在治','实际新增','实际死亡','实际治愈','国家'],index='编号',lift=[11,'Global (except China)'])
         wt2=MyWriter(feed_root+'未来预测数据.csv',['未来14天确诊数目','未来14天感染率','国家'])
+        wt3=MyWriter(feed_root+'全球疫情现状.csv',['患病人数','国家'],lift=[1,'Global (except China)'])
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
             country=cofrow['city']
             if country not in self.countries:
@@ -315,9 +328,10 @@ class EPI_Reader():
                 continue
             if country=='全国':
                 country='中国'
-            self.country_level(wt1,wt2,country,cofrow,recrow,dthrow)
+            self.country_level(wt1,wt2,wt3,country,cofrow,recrow,dthrow)
         wt1.save()
         wt2.save()
+        wt3.save()
         writejson(feed_root+'world_map_data_short.json',self.map_data)
         print('current date is',self.current_date)
 

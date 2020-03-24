@@ -10,6 +10,19 @@ import os
 from namemap import nameMap
 import pandas as pd
 
+def readjson(file):
+    with open(file,'r',encoding='utf-8')as f:
+        data=json.load(f)
+    return data
+
+feed_root='feed/'
+data_root='stat/data/'
+name_trans={'Singapore Rep.':'Singapore',
+        "United States":"United States of America",
+        "Korea":"South Korea"}
+world_pop=readjson(data_root+'worldPopulation.json')
+ch2en=readjson('stat/'+'ch2en.json')
+
 def write_to_pk(data,file):
     with open(file,'wb') as f:
         pk.dump(data,f)
@@ -17,11 +30,6 @@ def write_to_pk(data,file):
 def read_from_pk(file):
     with open(file,'rb') as f:
         data=pk.load(f)
-    return data
-
-def readjson(file):
-    with open(file,'r',encoding='utf-8')as f:
-        data=json.load(f)
     return data
 
 def writejson(file,data):
@@ -36,14 +44,14 @@ def format_date(date,split='-'):
     return f'{month}月{day}日'
 
 class MyWriter():
-    def __init__(self,path,header,index=None):
+    def __init__(self,path,header,index=None,lift=None):
         self.path=path
         self.header=header
         self.data=[]
         self.index=index
         if(index is not None):
             self.header.append(index)
-        self.cnt=0
+        self.lift=lift
     def insert(self,dt):
         l=[]
         for d in dt:
@@ -51,15 +59,23 @@ class MyWriter():
                 l.append(round(d,3))
             else:
                 l.append(d)
-        self.cnt+=1
-        if self.index is not None:
-            l.append(self.cnt)
         self.data.append(l)
     def save(self):
-        with open(self.path,'w',newline='',encoding='utf-8') as f:
+        with open(self.path,'w',newline='',encoding='gbk') as f:
             writer=csv.writer(f)
             writer.writerow(self.header)
+            remain=[]
+            cnt=0
+            if self.lift is not None:
+                liftind,liftfliter=self.lift
+                for d in self.data:
+                    cnt=cnt+1
+                    if d[liftind]==liftfliter:
+                        writer.writerow(d+[cnt])
+                    else:
+                        remain.append(d+[cnt])
             writer.writerows(self.data)
+            
 
 class XLSReader():
     def __init__(self,name,sheet_ind):
@@ -106,11 +122,8 @@ def date_add(datestr,offset):
     last=datetime.datetime.strftime(last,"%Y/%m/%d")
     return last
 
-feed_root='feed/'
-data_root='stat/data/'
-
 class EPI_Reader():
-    countries=['全国','韩国', '泰国', '新加坡', '日本', '伊朗', '美国', \
+    countries=['全球_不含中国','全国','韩国', '泰国', '新加坡', '日本', '伊朗', '美国', \
     '意大利', '法国', '德国', '西班牙', '荷兰', '瑞典', '比利时', '英国', \
     '瑞士', '希腊', '加拿大', '马来西亚', '菲律宾', '澳大利亚', '丹麦', '挪威', \
     '奥地利', '卢森堡', '卡塔尔', '爱尔兰', '葡萄牙', '以色列', '芬兰', '捷克', \
@@ -129,6 +142,7 @@ class EPI_Reader():
         self.death=death
         self.csv_path=csv_path
         self.epi_path=epi_path
+        self.ch2en=readjson('stat/ch2en.json')
     
     def get_rate(self):
         epi_path='stat/epi_initial.xlsx'
@@ -138,14 +152,14 @@ class EPI_Reader():
         death=XLSReader(epi_path,2)
         rate={}
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
-            city=cofrow['city']
-            if city not in self.countries:
+            country=cofrow['city']
+            if country not in self.countries:
                 continue
             date=self.dates[-1]
             rec=recrow[date]
             dth=dthrow[date]
             cof=cofrow[date]-rec-dth
-            rate[city] = 0 if (rec+dth)==0 else dth/(rec+dth)
+            rate[country] = 0 if (rec+dth)==0 else dth/(rec+dth)
         self.rateByCountry=rate
             
     def get_csv(self,country):
@@ -242,71 +256,69 @@ class EPI_Reader():
         self.props=props      
         return True
 
+    def country_level(self,wt1,wt2,country,cofrow,recrow,dthrow):
+        country=self.ch2en[country]
+        flg=False
+        for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
+            if flg:
+                wt1.insert([
+                    date,
+                    p,r,n,dth,rec,
+                    None,None,None,None,None,
+                    country
+                ])
+                continue
+            else:
+                a_conf=cofrow[date]
+                a_rec=recrow[date]
+                a_dth=dthrow[date]
+                a_rem=a_conf-a_rec-a_dth
+                last=cofrow[date_add(date,-1)]
+                a_new=a_conf-last
+                wt1.insert([
+                    date,
+                    p,r,n,dth,rec,
+                    a_conf,a_rem,a_new,a_dth,a_rec,
+                    country
+                ])
+            if date==self.current_date:
+                flg=True
+
+        today_ind=self.dateList.index(self.current_date)
+        inc=self.predict[today_ind+14]-self.predict[today_ind]
+        country=name_trans.get(country,country)
+        pop=float(world_pop[country])
+        rat=inc/pop*1000000
+        wt2.insert([inc,rat,country])
+        props=self.props
+        props['a_inc']=cofrow[self.current_date]-cofrow[date_add(self.current_date,-14)]
+        props['a_rate']=props['a_inc']/pop*1000000
+        props['f_rate']=props['f_inc']/pop*1000000
+        props['current']=cofrow[self.current_date]
+        props['name']=country
+        self.map_data.append(props)
+        print(country,'ok')
+
     def main(self):
-        name_trans={'Singapore Rep.':'Singapore',
-        "United States":"United States of America",
-        "Korea":"South Korea"}
-        map_data=[]
-        ch2en=readjson('stat/ch2en.json')
-        world_pop=readjson(data_root+'worldPopulation.json')
+        self.map_data=[]
         confirmed=self.confirmed
         recover=self.recover
         death=self.death
         wt1=MyWriter(feed_root+'全球疫情预测.csv',['日期','预测确诊','预测在治','预测新增','预测死亡'\
-        ,'预测治愈','实际确诊','实际在治','实际新增','实际死亡','实际治愈','国家'],index='编号')
+        ,'预测治愈','实际确诊','实际在治','实际新增','实际死亡','实际治愈','国家'],index='编号',lift=[11,'Global (except China)'])
         wt2=MyWriter(feed_root+'未来预测数据.csv',['未来14天确诊数目','未来14天感染率','国家'])
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
-            city=cofrow['city']
-            if city not in self.countries:
+            country=cofrow['city']
+            if country not in self.countries:
                 continue
-            if not self.get_csv(city):
+            if not self.get_csv(country):
                 continue
-            if city=='全国':
-                city='中国'
-            city=ch2en[city]
-            flg=False
-            for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
-                if flg:
-                    wt1.insert([
-                        date,
-                        p,r,n,dth,rec,
-                        None,None,None,None,None,
-                        city
-                    ])
-                    continue
-                else:
-                    a_conf=cofrow[date]
-                    a_rec=recrow[date]
-                    a_dth=dthrow[date]
-                    a_rem=a_conf-a_rec-a_dth
-                    last=cofrow[date_add(date,-1)]
-                    a_new=a_conf-last
-                    wt1.insert([
-                        date,
-                        p,r,n,dth,rec,
-                        a_conf,a_rem,a_new,a_dth,a_rec,
-                        city
-                    ])
-                if date==self.current_date:
-                    flg=True
-
-            today_ind=self.dateList.index(self.current_date)
-            inc=self.predict[today_ind+14]-self.predict[today_ind]
-            city=name_trans.get(city,city)
-            pop=float(world_pop[city])
-            rat=inc/pop*1000000
-            wt2.insert([inc,rat,city])
-            props=self.props
-            props['a_inc']=cofrow[self.current_date]-cofrow[date_add(self.current_date,-14)]
-            props['a_rate']=props['a_inc']/pop*1000000
-            props['f_rate']=props['f_inc']/pop*1000000
-            props['current']=cofrow[self.current_date]
-            props['name']=city
-            map_data.append(props)
-            print(city,'ok')
+            if country=='全国':
+                country='中国'
+            self.country_level(wt1,wt2,country,cofrow,recrow,dthrow)
         wt1.save()
         wt2.save()
-        writejson(feed_root+'world_map_data_short.json',map_data)
+        writejson(feed_root+'world_map_data_short.json',self.map_data)
         print('current date is',self.current_date)
 
 def dump_geo_json():

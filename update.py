@@ -234,6 +234,8 @@ def histroy_fugong_quegong_table():
         fugong = readjson(data_root+'fugong_bottomCard.json')
         quegong= readjson(data_root+'quegong_bottomCard.json')
         for ind,d in enumerate(all_date):
+            if datetime.datetime.strptime(d,'%Y-%m-%d').weekday()>4:
+                continue
             f=clip(fugong['value'][ind])
             q=clip(quegong['value'][ind])
             r=(f+(1-q))/2
@@ -315,7 +317,7 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    today=20200321
+    today=20200322
     print(today)
     bottomCard_quegong(today)
     bottomCard_fugong(today)

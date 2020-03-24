@@ -17,7 +17,7 @@ provinces = [
 ]
 
 
-def calQuegong(start = 20200210, end = 20200316):
+def calQuegong(start = 20200210, end = 20200321):
     if platform.system() == "Windows":
         path = "E:/jupyter/nCov/baiduqianxi/scp/data/city"
     else:
@@ -50,11 +50,7 @@ def calQuegong(start = 20200210, end = 20200316):
         else:
             lack_2020 = ((out_2020 - in_2020) / out_2020).tolist()
             lack_2020 = [0 if i < 0 else round(i,3) for i in lack_2020]
-        # if lack_2020[-1] > 1:
-        #     print(out_2020)
-        #     print(in_2020)
-        #     print(lack_2020)
-            # return
+            lack_2020 = [1 if i > 1 else i for i in lack_2020]
         if not flag:
             dateList = move_in.loc[move_in[move_in["date"]==start].index.tolist()[0] : move_in[move_in["date"]==end].index.tolist()[0]]["date"].values.tolist()
             dateList = [str(i)[:4]+"-"+str(i)[4:6]+"-"+str(i)[6:] for i in dateList]

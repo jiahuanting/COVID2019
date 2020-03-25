@@ -21,32 +21,43 @@ def writejson(file,data):
     with open(file,'w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False)
 
+translation=readjson('stat/translation.json')
+
 def clip(value,bound=(0,1)):
     value=max(bound[0],value)
     value=min(bound[1],value)
     return value
 
-def format_date(date):
+def format_date(date,en=False):
     date=date.split('-')
     year=date[0]
     month=date[1].lstrip('0')
     day=date[2].lstrip('0')
+    if en:
+        return f'{month}/{day}'
     return f'{month}月{day}日'
 
 class MyWriter():
-    def __init__(self,path,header,index=None):
+    def __init__(self,path,header,index=None,en=False):
         self.path=path
-        self.header=header
+        self.header=[]
+        if en:
+            for h in header:
+                self.header.append(translation.get(h,h))
+        else:
+            self.header=header
         self.data=[]
         self.index=index
         if(index is not None):
-            self.header.append(index)
+            self.header.append("Index" if en else index )
         self.cnt=0
     def insert(self,dt):
         l=[]
         for d in dt:
             if isinstance(d,float):
                 l.append(round(d,3))
+            elif isinstance(d,str):
+                l.append(translation.get(d,d))
             else:
                 l.append(d)
         self.cnt+=1
@@ -107,7 +118,7 @@ def get_shortname(tmp,shortName):
             break
     return name
 
-def left_table():
+def left_table(en=False):
     with open("./stat/shortName.json","r",encoding="utf-8") as jsonFile:
         cities_ = json.loads(jsonFile.read())
 
@@ -120,14 +131,16 @@ def left_table():
     city2code=tmp['city2code']
     code2province=tmp['code2province']
     
-    city2gdp={}
-    with open('stat/全国GDP.csv','r',encoding='utf-8') as f:
-        f_csv=csv.reader(f)
-        for ind,row in enumerate(f_csv):
-            if(ind==0):
-                continue
-            cname=cleantxt(row[0],cities_)
-            city2gdp[cname]=float(row[1])
+    # city2gdp={}
+    # with open('stat/全国GDP.csv','r',encoding='utf-8') as f:
+    #     f_csv=csv.reader(f)
+    #     for ind,row in enumerate(f_csv):
+    #         if(ind==0):
+    #             continue
+    #         cname=cleantxt(row[0],cities_)
+    #         city2gdp[cname]=float(row[1])
+    # writejson('stat/city2GDP.json',city2gdp)
+    city2gdp=readjson('stat/city2GDP.json')
     
     province2gdp={}
     for ind,c in enumerate(cities):
@@ -153,8 +166,8 @@ def left_table():
         q=clip(quegong[-1]['value'][ind])
         sf2fugong[sf]=sf2fugong.get(sf,0)+f*gdp/sgdp
         sf2quegong[sf]=sf2quegong.get(sf,0)+q*gdp/sgdp
-
-    wt=MyWriter(feed_root+'省份复工指数.csv',['省份','GDP','复工指数','缺工指数','恢复指数'])
+    name='Eng省份复工指数.csv' if en else '省份复工指数.csv'
+    wt=MyWriter(feed_root+name,['省份','GDP','复工指数','缺工指数','恢复指数'],en=en)
     def all_up():
         fugong = readjson(data_root+'fugong_bottomCard.json')
         quegong= readjson(data_root+'quegong_bottomCard.json')
@@ -170,11 +183,12 @@ def left_table():
         wt.insert([sf,gdp,f,q,r])
     wt.save()
 
-def right_bars():
+def right_bars(en=False):
     sideCard=readjson(data_root+'sideCard.json')
     trans={'in':'迁入指数','out':'迁出指数'}
     for phase in ['in','out']:
-        wt=MyWriter(feed_root+trans[phase][0:2]+'.csv',['城市',trans[phase]])
+        name='Eng'+trans[phase][0:2]+'.csv' if en else trans[phase][0:2]+'.csv'
+        wt=MyWriter(feed_root+name,['城市',trans[phase]],en=en)
         for item in sideCard[phase]:
             c=item['city']
             v=item['value']
@@ -197,7 +211,7 @@ def assert_date():
     print(fugong_all_date.difference(fugong_daily_date))
     print(fugong_daily_date.difference(fugong_all_date))
 
-def histroy_fugong_quegong_table():
+def histroy_fugong_quegong_table(en=False):
     with open("./stat/shortName.json","r",encoding="utf-8") as jsonFile:
         cities_ = json.loads(jsonFile.read())
     
@@ -211,14 +225,16 @@ def histroy_fugong_quegong_table():
     city2code=tmp['city2code']
     code2province=tmp['code2province']
     
-    city2gdp={}
-    with open('stat/全国GDP.csv','r',encoding='utf-8') as f:
-        f_csv=csv.reader(f)
-        for ind,row in enumerate(f_csv):
-            if(ind==0):
-                continue
-            cname=cleantxt(row[0],cities_)
-            city2gdp[cname]=float(row[1])
+    # city2gdp={}
+    # with open('stat/全国GDP.csv','r',encoding='utf-8') as f:
+    #     f_csv=csv.reader(f)
+    #     for ind,row in enumerate(f_csv):
+    #         if(ind==0):
+    #             continue
+    #         cname=cleantxt(row[0],cities_)
+    #         city2gdp[cname]=float(row[1])
+    # writejson('stat/city2GDP.json',city2gdp)
+    city2gdp=readjson('stat/city2GDP.json')
     
     province2gdp={}
     for ind,c in enumerate(cities):
@@ -229,8 +245,8 @@ def histroy_fugong_quegong_table():
         code=city2code[c][0:2]
         sf=get_shortname(code2province[code],cities_)
         province2gdp[sf]=province2gdp.get(sf,0)+gdp
-
-    wt=MyWriter(feed_root+'各省复工复产历史数据.csv',['日期','复工指数','缺工指数','省份'],index='序号')
+    name='Eng各省复工复产历史数据.csv' if en else '各省复工复产历史数据.csv'
+    wt=MyWriter(feed_root+name,['日期','复工指数','缺工指数','省份'],index='序号',en=en)
     def all_up(wt,all_date):
         fugong = readjson(data_root+'fugong_bottomCard.json')
         quegong= readjson(data_root+'quegong_bottomCard.json')
@@ -240,12 +256,14 @@ def histroy_fugong_quegong_table():
             f=clip(fugong['value'][ind])
             q=clip(quegong['value'][ind])
             r=(f+(1-q))/2
-            wt.insert([format_date(d),f,q,'全国'])
+            wt.insert([format_date(d,en),f,q,'全国'])
     all_up(wt,all_date)
     date2sf2qg={}
     date2sf2fg={}
     for f_item,q_item in zip(fugong,quegong):
         date=f_item['date']
+        if datetime.datetime.strptime(date,'%Y-%m-%d').weekday()>4:
+            continue
         sf2quegong={}
         sf2fugong={}
         for ind,c in enumerate(cities):
@@ -262,9 +280,11 @@ def histroy_fugong_quegong_table():
         date2sf2qg[date]=sf2quegong
     for sf,gdp in province2gdp.items():
         for date in all_date:
+            if datetime.datetime.strptime(date,'%Y-%m-%d').weekday()>4:
+                continue
             f=date2sf2fg[date][sf]
             q=date2sf2qg[date][sf]
-            wt.insert([format_date(date),f,q,sf])
+            wt.insert([format_date(date,en),f,q,sf])
     wt.save()
 
 
@@ -318,7 +338,7 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    today=20200322
+    today=20200323
     bottomCard_quegong(today)
     bottomCard_fugong(today)
     calFugong(start=20200210, end=today)
@@ -329,6 +349,9 @@ if __name__=='__main__':
     left_table()
     right_bars()
     histroy_fugong_quegong_table()
+    left_table(en=True)
+    right_bars(en=True)
+    histroy_fugong_quegong_table(en=True)
     china_map('fugong')
     china_map('quegong')
     

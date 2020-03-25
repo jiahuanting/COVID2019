@@ -44,18 +44,21 @@ def format_date(date,split='-'):
     return f'{month}月{day}日'
 
 class MyWriter():
-    def __init__(self,path,header,index=None,lift=None):
-        self.path=path
-        self.header=header
+    def __init__(self,path,header,index=None,lift=None,force_int=[]):
         self.data=[]
         self.index=index
+        self.header=header
+        self.path=path
         if(index is not None):
             self.header.append(index)
         self.lift=lift
+        self.force_int=force_int
     def insert(self,dt):
         l=[]
-        for d in dt:
-            if isinstance(d,float):
+        for ind,d in enumerate(dt):
+            if isinstance(d,float) and ind in self.force_int:
+                l.append(int(d))
+            elif isinstance(d,float):
                 l.append(round(d,3))
             else:
                 l.append(d)
@@ -160,16 +163,21 @@ class EPI_Reader():
         recover=XLSReader(epi_path,1)
         death=XLSReader(epi_path,2)
         rate={}
+        rate_default={}
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
             country=cofrow['city']
             if country not in self.countries:
                 continue
-            date=self.dates[-1]
-            rec=recrow[date]
-            dth=dthrow[date]
-            cof=cofrow[date]-rec-dth
-            rate[country] = 0 if (rec+dth)==0 else dth/(rec+dth)
+            tmp={}
+            for date in self.dates:
+                rec=recrow[date]
+                dth=dthrow[date]
+                cof=cofrow[date]-rec-dth
+                tmp[date] = 0 if (rec+dth)==0 else dth/(rec+dth)  
+            rate_default[country]=tmp[self.dates[-1]]
+            rate[country]=tmp          
         self.rateByCountry=rate
+        self.rate_default=rate_default
             
     def get_csv(self,country):
         def get_once(csvData,colname,cur):
@@ -195,12 +203,12 @@ class EPI_Reader():
             print('not such file: '+filename)
             return False
         if '全国' in filename:
-            csvData_wh=pd.read_csv(self.csv_path + '武汉市.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Dailynew_remove','Dailynew_cure'] ]
-            csvData_hb=pd.read_csv(self.csv_path + '湖北_不含武汉.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Dailynew_remove','Dailynew_cure'] ]
-            csvData_qg=pd.read_csv(self.csv_path + '全国_不含湖北.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Dailynew_remove','Dailynew_cure'] ]
+            csvData_wh=pd.read_csv(self.csv_path + '武汉市.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Remove','Predict_cure'] ]
+            csvData_hb=pd.read_csv(self.csv_path + '湖北_不含武汉.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Remove','Predict_cure'] ]
+            csvData_qg=pd.read_csv(self.csv_path + '全国_不含湖北.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Remove','Predict_cure'] ]
             csvData=(csvData_wh,csvData_hb,csvData_qg)
         else:
-            csvData = pd.read_csv(self.csv_path + filename)[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Dailynew_remove'] ]
+            csvData = pd.read_csv(self.csv_path + filename)[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Remove'] ]
         day = datetime.datetime.strptime(self.current_date, "%Y/%m/%d")
         predict=[]
         remain=[]
@@ -216,18 +224,18 @@ class EPI_Reader():
                 predict.append(get_china(csvData,'Predict_confirm',cur))
                 remain.append(get_china(csvData,'Remain_confirm',cur))
                 pred_daily_new.append(get_china(csvData,'Dailynew_confirm',cur))
-                c= get_china(csvData,'Dailynew_cure',cur)
-                rmv=get_china(csvData,'Dailynew_remove',cur)
-                dth=rmv-c
+                rmv=get_china(csvData,'Remove',cur)
+                dth=rmv*self.rateByCountry[country].get(cur,self.rate_default[country])
+                c=rmv-dth
                 death.append(dth)
                 cure.append(c)
             else:
                 predict.append(get_once(csvData,'Predict_confirm',cur))
                 remain.append(get_once(csvData,'Remain_confirm',cur))
                 pred_daily_new.append(get_once(csvData,'Dailynew_confirm',cur))
-                rmv=get_once(csvData,'Dailynew_remove',cur)
+                rmv=get_once(csvData,'Remove',cur)
                 if(rmv is not None):
-                    dth=rmv*self.rateByCountry[country]
+                    dth=rmv*self.rateByCountry[country].get(cur,self.rate_default[country])
                     c=rmv-dth
                     death.append(dth)
                     cure.append(c)
@@ -246,15 +254,15 @@ class EPI_Reader():
         if "全国" in filename:
             all_dates=csvData_hb['Date'].tolist()
             func=get_china
-            props['scale']=func(csvData,'Predict_confirm','2020/06/14')
+            props['scale']=int(func(csvData,'Predict_confirm','2020/06/14'))
         else:
             all_dates=csvData['Date'].tolist()
             func=get_once
-            props['scale']=func(csvData,'Predict_confirm',all_dates[-1])
+            props['scale']=int(func(csvData,'Predict_confirm',all_dates[-1]))
 
         f_inc=func(csvData,'Predict_confirm',date_add(self.current_date,14))-\
               func(csvData,'Predict_confirm',self.current_date)
-        props['f_inc']=f_inc
+        props['f_inc']=int(f_inc)
         m,mdate=0,None
         for d in all_dates:
             cur_add=func(csvData,'Dailynew_confirm',d)
@@ -267,6 +275,7 @@ class EPI_Reader():
 
     def country_level(self,wt1,wt2,wt3,country,cofrow,recrow,dthrow):
         country=self.ch2en[country]
+        country=name_trans.get(country,country)
         flg=False
         for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
             if flg:
@@ -295,19 +304,19 @@ class EPI_Reader():
 
         today_ind=self.dateList.index(self.current_date)
         inc=self.predict[today_ind+14]-self.predict[today_ind]
-        country=name_trans.get(country,country)
         pop=float(world_pop[country])
         rat=inc/pop*1000000
-        wt2.insert([inc,rat,country])
+        wt2.insert([int(inc),rat,country])
+
         props=self.props
-        props['a_inc']=cofrow[self.current_date]-cofrow[date_add(self.current_date,-14)]
+        props['a_inc']=int(cofrow[self.current_date]-cofrow[date_add(self.current_date,-14)])
         props['a_rate']=props['a_inc']/pop*1000000
         props['f_rate']=props['f_inc']/pop*1000000
-        props['current']=cofrow[self.current_date]
+        props['current']=int(cofrow[self.current_date])
         props['name']=country
         self.map_data.append(props)
 
-        wt3.insert([cofrow[self.current_date],country])
+        wt3.insert([int(cofrow[self.current_date]),country])
 
         print(country,'ok')
 
@@ -317,9 +326,14 @@ class EPI_Reader():
         recover=self.recover
         death=self.death
         wt1=MyWriter(feed_root+'全球疫情预测.csv',['日期','预测确诊','预测在治','预测新增','预测死亡'\
-        ,'预测治愈','实际确诊','实际在治','实际新增','实际死亡','实际治愈','国家'],index='编号',lift=[11,'Global (except China)'])
-        wt2=MyWriter(feed_root+'未来预测数据.csv',['未来14天确诊数目','未来14天感染率','国家'])
-        wt3=MyWriter(feed_root+'全球疫情现状.csv',['患病人数','国家'],lift=[1,'Global (except China)'])
+        ,'预测治愈','实际确诊','实际在治','实际新增','实际死亡','实际治愈','国家'],\
+        index='编号',lift=[11,'Global (except China)'],
+        force_int=[1,2,3,4,5,6,7,8,9,10])
+        wt2=MyWriter(feed_root+'未来预测数据.csv',['未来14天确诊数目','未来14天感染率','国家'],\
+        force_int=[0])
+        wt3=MyWriter(feed_root+'全球疫情现状.csv',['患病人数','国家'],\
+        lift=[1,'Global (except China)'],\
+        force_int=[0])
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
             country=cofrow['city']
             if country not in self.countries:

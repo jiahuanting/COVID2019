@@ -1,7 +1,7 @@
 import os
 
 if __name__=='__main__':
-    results_dir='results/'
+    results_dir='results-new/'
     dirlist = os.listdir(results_dir)
     for csv in dirlist:
         if '不含' in csv:

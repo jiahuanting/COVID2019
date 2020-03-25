@@ -1,4 +1,4 @@
-results-old
+results-*
 feed
 *.zip
 *__pycache__*

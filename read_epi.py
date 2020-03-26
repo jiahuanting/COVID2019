@@ -18,7 +18,9 @@ def readjson(file):
 feed_root='feed/'
 data_root='stat/data/'
 name_trans={'Singapore Rep.':'Singapore',
-        "United States":"United States of America",
+        # "United States":"United States of America",
+        "United States":'USA',
+        'United Kingdom':"UK",
         "Korea":"South Korea"}
 world_pop=readjson(data_root+'worldPopulation.json')
 ch2en=readjson('stat/'+'ch2en.json')
@@ -36,12 +38,12 @@ def writejson(file,data):
     with open(file,'w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False)
 
-def format_date(date,split='-'):
-    date=date.split(split)
+def format_date(date):
+    date=date.split('/')
     year=date[0]
     month=date[1].lstrip('0')
     day=date[2].lstrip('0')
-    return f'{month}月{day}日'
+    return f'{month}/{day}'
 
 class MyWriter():
     def __init__(self,path,header,index=None,lift=None,force_int=[]):
@@ -139,7 +141,7 @@ class EPI_Reader():
     '意大利', '法国', '德国', '西班牙', '荷兰', '瑞典', '比利时', '英国', \
     '瑞士', '希腊', '加拿大', '马来西亚', '菲律宾', '澳大利亚', '丹麦', '挪威', \
     '奥地利', '卢森堡', '卡塔尔', '爱尔兰', '葡萄牙', '以色列', '芬兰', '捷克', \
-    '巴西', '智利', '巴基斯坦']   
+    '巴西', '智利', '巴基斯坦','俄罗斯']   
     def __init__(self):
         epi_path='stat/epi_initial.xlsx'
         csv_path='results/'
@@ -216,7 +218,7 @@ class EPI_Reader():
         death=[]
         cure=[]
         dateList=[]
-        for d in range(-13,31):
+        for d in range(-14,31):
             cur = day+datetime.timedelta(days=d)
             cur = datetime.datetime.strftime(cur,"%Y/%m/%d")
             dateList.append(cur)
@@ -280,7 +282,7 @@ class EPI_Reader():
         for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
             if flg:
                 wt1.insert([
-                    date,
+                    format_date(date),
                     p,r,n,dth,rec,
                     None,None,None,None,None,
                     country
@@ -294,7 +296,7 @@ class EPI_Reader():
                 last=cofrow[date_add(date,-1)]
                 a_new=a_conf-last
                 wt1.insert([
-                    date,
+                    format_date(date),
                     p,r,n,dth,rec,
                     a_conf,a_rem,a_new,a_dth,a_rec,
                     country
@@ -337,6 +339,7 @@ class EPI_Reader():
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
             country=cofrow['city']
             if country not in self.countries:
+                print('no such country',country)
                 continue
             if not self.get_csv(country):
                 continue

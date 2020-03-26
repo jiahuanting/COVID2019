@@ -6,7 +6,7 @@ translation={
     "缺工指数":"Absence",
     "恢复指数":"",
     '日期':'Date',
-    '全国':'Nationwide',
+    '全国':'China',
     '迁出指数':'Increasing of people',
     '迁入指数':'Decreasing of people',
     '城市':'City',

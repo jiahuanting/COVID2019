@@ -17,7 +17,7 @@ nameMap = {
     "Bulgaria": "保加利亚",
     "The Bahamas": "巴哈马",
     "Bosnia and Herzegovina": "波黑",
-    "Belarus": "白俄罗斯",
+    # "Belarus": "白俄罗斯",
     "Belize": "伯利兹",
     "Bermuda": "百慕大",
     "Bolivia": "玻利维亚",

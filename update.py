@@ -35,17 +35,19 @@ def format_date(date,en=False):
     day=date[2].lstrip('0')
     if en:
         return f'{month}/{day}'
-    return f'{month}月{day}日'
+    else:
+        return f'{month}月{day}日'
 
 class MyWriter():
     def __init__(self,path,header,index=None,en=False):
         self.path=path
         self.header=[]
-        if en:
-            for h in header:
-                self.header.append(translation.get(h,h))
-        else:
-            self.header=header
+        self.en=en
+        # if en:
+        #     for h in header:
+        #         self.header.append(translation.get(h,h))
+        # else:
+        self.header=header
         self.data=[]
         self.index=index
         if(index is not None):
@@ -56,7 +58,7 @@ class MyWriter():
         for d in dt:
             if isinstance(d,float):
                 l.append(round(d,3))
-            elif isinstance(d,str):
+            elif isinstance(d,str) and self.en:
                 l.append(translation.get(d,d))
             else:
                 l.append(d)
@@ -338,7 +340,7 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    today=20200323
+    today=20200324
     bottomCard_quegong(today)
     bottomCard_fugong(today)
     calFugong(start=20200210, end=today)

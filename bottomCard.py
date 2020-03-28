@@ -44,8 +44,13 @@ def bottomCard_fugong(day):
             continue
         travel = pd.read_csv(path+"/"+city+"/internalflowhistory/move_in.csv").sort_values(by=["date"])
         # 年前平均活动强度
-        week1_2020 = travel.loc[travel[travel["date"]==week1_start_2020].index.tolist()[0] : travel[travel["date"]==week1_end_2020].index.tolist()[0]]["value"].mean()
-        week2_2020 = travel.loc[travel[travel["date"]==week2_start_2020].index.tolist()[0] : travel[travel["date"]==week2_end_2020].index.tolist()[0]]["value"].mean()
+        try:
+            week1_2020 = travel.loc[travel[travel["date"]==week1_start_2020].index.tolist()[0] : travel[travel["date"]==week1_end_2020].index.tolist()[0]]["value"].mean()
+            week2_2020 = travel.loc[travel[travel["date"]==week2_start_2020].index.tolist()[0] : travel[travel["date"]==week2_end_2020].index.tolist()[0]]["value"].mean()
+        except Exception as e:
+            print(e)
+            print(city)
+            exit()
         ave = (week1_2020+week2_2020)/2
         # GDP占比
         try:
@@ -99,10 +104,14 @@ def bottomCard_quegong(day):
             continue
         move_in = pd.read_csv(path+"/"+city+"/historycurve/move_in.csv").sort_values(by=["date"])
         move_out= pd.read_csv(path+"/"+city+"/historycurve/move_out.csv").sort_values(by=["date"])
-        
-        out_2020_before = move_out.loc[move_out[move_out["date"]==time1].index.tolist()[0] : move_out[move_out["date"]==time2].index.tolist()[0]]["value"].sum() - move_in.loc[move_in[move_in["date"]==time1].index.tolist()[0] : move_in[move_in["date"]==time2].index.tolist()[0]]["value"].sum()
-        # 迁入是累积的
-        in_2020_after = move_in.loc[move_in[move_in["date"]==time3].index.tolist()[0] : move_in[move_in["date"]==time4].index.tolist()[0]]["value"].cumsum() - move_out.loc[move_out[move_out["date"]==time3].index.tolist()[0] : move_out[move_out["date"]==time4].index.tolist()[0]]["value"].cumsum()
+        try:
+            out_2020_before = move_out.loc[move_out[move_out["date"]==time1].index.tolist()[0] : move_out[move_out["date"]==time2].index.tolist()[0]]["value"].sum() - move_in.loc[move_in[move_in["date"]==time1].index.tolist()[0] : move_in[move_in["date"]==time2].index.tolist()[0]]["value"].sum()
+            # 迁入是累积的
+            in_2020_after = move_in.loc[move_in[move_in["date"]==time3].index.tolist()[0] : move_in[move_in["date"]==time4].index.tolist()[0]]["value"].cumsum() - move_out.loc[move_out[move_out["date"]==time3].index.tolist()[0] : move_out[move_out["date"]==time4].index.tolist()[0]]["value"].cumsum()
+        except Exception as e:
+            print(e)
+            print(city)
+            exit(1)
         # GDP占比
         try:
             GDP_weight = dataD[city] / GDP_2018

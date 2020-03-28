@@ -34,7 +34,7 @@ def format_date(date,en=False):
     month=date[1].lstrip('0')
     day=date[2].lstrip('0')
     if en:
-        return f'{month}/{day}'
+        return f'{month} / {day}'
     else:
         return f'{month}月{day}日'
 
@@ -340,7 +340,7 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    today=20200324
+    today=20200325
     bottomCard_quegong(today)
     bottomCard_fugong(today)
     calFugong(start=20200210, end=today)

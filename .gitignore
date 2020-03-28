@@ -1,5 +1,4 @@
 results-*
-feed
 *.zip
 *__pycache__*
 *.tar.gz

@@ -43,7 +43,7 @@ def format_date(date):
     year=date[0]
     month=date[1].lstrip('0')
     day=date[2].lstrip('0')
-    return f'{month}/{day}'
+    return f'{month} / {day}'
 
 class MyWriter():
     def __init__(self,path,header,index=None,lift=None,force_int=[]):
@@ -141,7 +141,7 @@ class EPI_Reader():
     '意大利', '法国', '德国', '西班牙', '荷兰', '瑞典', '比利时', '英国', \
     '瑞士', '希腊', '加拿大', '马来西亚', '菲律宾', '澳大利亚', '丹麦', '挪威', \
     '奥地利', '卢森堡', '卡塔尔', '爱尔兰', '葡萄牙', '以色列', '芬兰', '捷克', \
-    '巴西', '智利', '巴基斯坦','俄罗斯']   
+    '巴西', '智利', '巴基斯坦','俄罗斯','爱沙尼亚','斯洛文尼亚']   
     def __init__(self):
         epi_path='stat/epi_initial.xlsx'
         csv_path='results/'
@@ -369,8 +369,48 @@ def dump_geo_json():
     geojson={"type":"FeatureCollection","features":features}
     writejson(feed_root+"world_pred.json",geojson)
 
+
+import matplotlib.pyplot as plt
+
+def plot_curve(countrylist,curdate):
+    epi_path='stat/epi_initial.xlsx'
+    csv_path='results/'
+    confirmed=XLSReader(epi_path,0)
+    recover=XLSReader(epi_path,1)
+    death=XLSReader(epi_path,2)
+    rate={}
+    rate_default={}
+    day = datetime.datetime.strptime(curdate, "%Y/%m/%d")
+    for cofrow,recrow,dthrow in zip(confirmed,recover,death):
+        country=cofrow['city']
+        if country not in countrylist:
+            continue
+        predict=[]
+        actual=[]
+        csvData = pd.read_csv('results/'+country+'.csv')[ ["Date","Predict_confirm","Remain_confirm",'Dailynew_confirm','Remove'] ]
+        p_date=[]
+        a_date=[]
+        for d in range(-14,1):
+            cur = day+datetime.timedelta(days=d)
+            cur = datetime.datetime.strftime(cur,"%Y/%m/%d")
+            actual.append(cofrow[cur])
+            a_date.append(cur)
+        
+        for d in range(-5,31):
+            cur = day+datetime.timedelta(days=d)
+            cur = datetime.datetime.strftime(cur,"%Y/%m/%d")
+            predict.append(csvData.loc[csvData['Date']==cur,"Predict_confirm"].tolist()[0])
+            p_date.append(cur)
+        plt.plot(a_date,actual)
+        plt.plot(p_date,predict)
+        plt.title(ch2en[country])
+        plt.show()
+        
+                  
+
 if __name__=='__main__':
     epi=EPI_Reader()
     epi.get_rate()
     epi.main()
     dump_geo_json()
+    # plot_curve(['韩国'],'2020/3/25')

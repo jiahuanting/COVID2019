@@ -340,7 +340,7 @@ def china_map(indextype):
 if __name__=='__main__':
     # today=strftime(r"%Y%m%d",localtime(time()))
 
-    today=20200325
+    today=20200327
     bottomCard_quegong(today)
     bottomCard_fugong(today)
     calFugong(start=20200210, end=today)

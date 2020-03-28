@@ -306,7 +306,10 @@ class EPI_Reader():
 
         today_ind=self.dateList.index(self.current_date)
         inc=self.predict[today_ind+14]-self.predict[today_ind]
-        pop=float(world_pop[country])
+        if country == "Czech Rep.":
+            pop=float(world_pop["Czech Republic"])
+        else:
+            pop=float(world_pop[country])
         rat=inc/pop*1000000
         wt2.insert([int(inc),rat,country])
 

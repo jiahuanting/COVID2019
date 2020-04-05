@@ -1,33 +1,40 @@
 未来14天确诊数目,未来14天感染率,国家
-0,0.0,China
-157,3.051,South Korea
-1568,12.398,Japan
-20922,255.777,Iran
-90705,277.244,USA
-53433,884.198,Italy
-52547,784.444,France
-42214,509.05,Germany
-34807,744.965,Spain
-16441,954.163,Netherlands
-7848,770.778,Sweden
-18726,1639.486,Belgium
-27055,406.916,UK
-6620,777.39,Switzerland
-1279,119.3,Greece
-12342,333.049,Canada
-11549,462.135,Australia
-2833,488.791,Denmark
-4867,915.829,Norway
-11819,1336.007,Austria
-2564,4219.807,Luxembourg
-194,70.089,Qatar
-10798,2224.876,Ireland
-16447,1599.701,Portugal
-6730,757.607,Israel
-4401,797.713,Finland
-15809,1487.834,Czech Rep.
-21902,104.562,Brazil
-541243,84.905,Global (except China)
-11277,78.058,Russia
-2342,1773.331,Estonia
-842,407.383,Slovenia
+1,0.001,China
+1018,19.726,South Korea
+4971,71.61,Thailand
+620,109.991,Singapore
+2749,21.73,Japan
+13226,161.692,Iran
+156897,479.564,USA
+43212,715.073,Italy
+55370,826.588,France
+27273,328.882,Germany
+48085,1029.154,Spain
+14497,841.369,Netherlands
+9205,903.971,Sweden
+15450,1352.723,Belgium
+40741,612.754,UK
+8170,959.387,Switzerland
+1395,130.13,Greece
+22646,611.108,Canada
+4591,145.641,Malaysia
+4464,41.86,Philippines
+10204,408.32,Australia
+3307,570.464,Denmark
+5921,1114.228,Norway
+8564,968.011,Austria
+1943,3197.679,Luxembourg
+393,141.302,Qatar
+5707,1175.873,Ireland
+14779,1437.409,Portugal
+7059,794.626,Israel
+4800,870.015,Finland
+6700,630.612,Czech Rep.
+20491,97.824,Brazil
+595788,93.462,Global (except China)
+6424,30.276,Pakistan
+9223,63.837,Russia
+3491,2643.057,Estonia
+1161,561.854,Slovenia
+32376,393.304,Turkey
+5655,1353.888,Panama

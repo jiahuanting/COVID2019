@@ -21,7 +21,8 @@ name_trans={'Singapore Rep.':'Singapore',
         # "United States":"United States of America",
         "United States":'USA',
         'United Kingdom':"UK",
-        "Korea":"South Korea"}
+        "Korea":"South Korea",
+        "Czech Republic":"Czech Rep."}
 world_pop=readjson(data_root+'worldPopulation.json')
 ch2en=readjson('stat/'+'ch2en.json')
 
@@ -141,7 +142,8 @@ class EPI_Reader():
     '意大利', '法国', '德国', '西班牙', '荷兰', '瑞典', '比利时', '英国', \
     '瑞士', '希腊', '加拿大', '马来西亚', '菲律宾', '澳大利亚', '丹麦', '挪威', \
     '奥地利', '卢森堡', '卡塔尔', '爱尔兰', '葡萄牙', '以色列', '芬兰', '捷克', \
-    '巴西', '智利', '巴基斯坦','俄罗斯','爱沙尼亚','斯洛文尼亚']   
+    '巴西', '智利', '巴基斯坦','俄罗斯','爱沙尼亚','斯洛文尼亚','土耳其',\
+    '巴拿马']   
     def __init__(self):
         epi_path='stat/epi_initial.xlsx'
         csv_path='results/'
@@ -157,6 +159,7 @@ class EPI_Reader():
         self.csv_path=csv_path
         self.epi_path=epi_path
         self.ch2en=readjson('stat/ch2en.json')
+        self.en2loc=readjson('stat/country_locations.json')
     
     def get_rate(self):
         epi_path='stat/epi_initial.xlsx'
@@ -279,6 +282,7 @@ class EPI_Reader():
         country=self.ch2en[country]
         country=name_trans.get(country,country)
         flg=False
+        flg2=False
         for date,p,r,n,dth,rec in zip(self.dateList,self.predict,self.remain,self.pred_daily_new,self.pred_death,self.pred_cure):
             if flg:
                 wt1.insert([
@@ -295,22 +299,30 @@ class EPI_Reader():
                 a_rem=a_conf-a_rec-a_dth
                 last=cofrow[date_add(date,-1)]
                 a_new=a_conf-last
-                wt1.insert([
-                    format_date(date),
-                    p,r,n,dth,rec,
-                    a_conf,a_rem,a_new,a_dth,a_rec,
-                    country
-                ])
+                if flg2:
+                    wt1.insert([
+                        format_date(date),
+                        p,r,n,dth,rec,
+                        a_conf,a_rem,a_new,a_dth,a_rec,
+                        country
+                    ])
+                else:
+                    wt1.insert([
+                        format_date(date),
+                        p,r,n,None,None,
+                        a_conf,a_rem,a_new,a_dth,a_rec,
+                        country
+                    ])
+            if date==date_add(self.current_date,-2):
+                flg2=True
             if date==self.current_date:
                 flg=True
 
         today_ind=self.dateList.index(self.current_date)
         inc=self.predict[today_ind+14]-self.predict[today_ind]
-        if country == "Czech Rep.":
-            pop=float(world_pop["Czech Republic"])
-        else:
-            pop=float(world_pop[country])
+        pop=float(world_pop[country])
         rat=inc/pop*1000000
+        
         wt2.insert([int(inc),rat,country])
 
         props=self.props
@@ -321,7 +333,8 @@ class EPI_Reader():
         props['name']=country
         self.map_data.append(props)
 
-        wt3.insert([int(cofrow[self.current_date]),country])
+        loc = self.en2loc[country]
+        wt3.insert([int(cofrow[self.current_date]),country,loc[0],loc[1]])
 
         print(country,'ok')
 
@@ -336,7 +349,7 @@ class EPI_Reader():
         force_int=[1,2,3,4,5,6,7,8,9,10])
         wt2=MyWriter(feed_root+'未来预测数据.csv',['未来14天确诊数目','未来14天感染率','国家'],\
         force_int=[0])
-        wt3=MyWriter(feed_root+'全球疫情现状.csv',['患病人数','国家'],\
+        wt3=MyWriter(feed_root+'全球疫情现状.csv',['患病人数','国家','lon','lat'],\
         lift=[1,'Global (except China)'],\
         force_int=[0])
         for cofrow,recrow,dthrow in zip(confirmed,recover,death):
@@ -416,4 +429,4 @@ if __name__=='__main__':
     epi.get_rate()
     epi.main()
     dump_geo_json()
-    # plot_curve(['韩国'],'2020/3/25')
+    # plot_curve(['菲律宾','泰国','巴基斯坦'],'2020/3/30')

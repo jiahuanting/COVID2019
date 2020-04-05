@@ -1,33 +1,33 @@
 省份,GDP,复工指数,缺工指数,恢复指数
-China,900309.0,0.911,0.204,0.854
-The xinjiang uygur autonomous region,13511.68,0.999,0.524,0.738
-Sichuan province,41904.1,0.898,0.246,0.826
-"In yunnan province,",17608.6,0.953,0.1,0.927
-"Guangxi zhuang autonomous region,",21030.46,0.904,0.09,0.907
-The Tibet autonomous region,1363.07,0.986,0.362,0.812
-In hebei province,34285.97,0.905,0.267,0.819
-Hubei province,38898.7,0.621,0.326,0.648
-Qinghai province,7462.2,1.0,0.099,0.951
-Zhejiang province,56425.61,0.979,0.284,0.848
-"Guangdong province,",101025.94,0.907,0.351,0.778
-In anhui province,30429.41,0.902,0.095,0.903
-Fujian province,35788.57,0.91,0.336,0.787
-Liaoning province,17232.9,0.926,0.168,0.879
-Jiangxi province,22002.35,0.836,0.104,0.866
-The guizhou province,15675.57,0.886,0.01,0.938
-Heilongjiang province,25569.59,0.822,0.334,0.744
-jilin,16017.74,0.928,0.274,0.827
-Jiangsu province,94323.54,0.944,0.221,0.862
-Shanxi Province,15487.88,0.925,0.162,0.882
-Gansu province,8184.22,0.954,0.056,0.949
-In shandong province,76235.31,0.929,0.288,0.82
-Shanghai,32679.9,0.873,0.588,0.643
-Shaanxi province,23925.09,0.895,0.141,0.877
-Henan province,48325.85,0.845,0.059,0.893
-Hunan province,37623.78,0.854,0.115,0.869
-The ningxia hui autonomous region,3748.08,0.958,0.252,0.853
-chongqing,20363.2,0.845,0.0,0.922
-hainan,4483.97,0.863,0.302,0.78
-The Inner Mongolia autonomous region,18052.55,0.946,0.405,0.77
-tianjin,18809.6,0.845,0.541,0.652
-Beijing,30320.0,0.63,0.64,0.495
+China,900309.0,0.909,0.18,0.865
+The xinjiang uygur autonomous region,13511.68,0.973,0.493,0.74
+Sichuan province,41904.1,0.889,0.257,0.816
+"In yunnan province,",17608.6,0.93,0.102,0.914
+"Guangxi zhuang autonomous region,",21030.46,0.872,0.09,0.891
+The Tibet autonomous region,1363.07,0.997,0.316,0.841
+In hebei province,34285.97,0.923,0.271,0.826
+Hubei province,38898.7,0.668,0.29,0.689
+Qinghai province,7462.2,0.991,0.105,0.943
+Zhejiang province,56425.61,0.97,0.273,0.849
+"Guangdong province,",101025.94,0.883,0.355,0.764
+In anhui province,30429.41,0.931,0.092,0.919
+Fujian province,35788.57,0.859,0.334,0.763
+Liaoning province,17232.9,0.928,0.149,0.889
+Jiangxi province,22002.35,0.842,0.09,0.876
+The guizhou province,15675.57,0.857,0.009,0.924
+Heilongjiang province,25569.59,0.842,0.331,0.755
+jilin,16017.74,0.932,0.261,0.836
+Jiangsu province,94323.54,0.95,0.216,0.867
+Shanxi Province,15487.88,0.925,0.151,0.887
+Gansu province,8184.22,0.921,0.056,0.933
+In shandong province,76235.31,0.933,0.28,0.826
+Shanghai,32679.9,0.856,0.587,0.635
+Shaanxi province,23925.09,0.875,0.141,0.867
+Henan province,48325.85,0.852,0.047,0.903
+Hunan province,37623.78,0.894,0.116,0.889
+The ningxia hui autonomous region,3748.08,0.951,0.239,0.856
+chongqing,20363.2,0.848,0.0,0.924
+hainan,4483.97,0.857,0.35,0.754
+The Inner Mongolia autonomous region,18052.55,0.955,0.406,0.774
+tianjin,18809.6,0.846,0.505,0.67
+Beijing,30320.0,0.637,0.601,0.518

@@ -10,4 +10,3 @@ if __name__=='__main__':
             continue 
         name=csv.split('.')[0].split('_')[0]
         os.rename(results_dir+csv,results_dir+ name+'.csv')
-        print(results_dir+name+'.csv')

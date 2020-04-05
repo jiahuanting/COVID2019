@@ -10,7 +10,7 @@ import csv
 import re
 from namemap import nameMap
 
-predictDate='2020-03-28'
+predictDate='2020-03-22'
 
 def index_max(l):
     m=0
@@ -68,13 +68,13 @@ class MyWriter():
 
 
 name = {
-    'nation': '全国_不含湖北', 'hubei': '湖北_不含武汉', 'wuhan': '武汉市', 'zhejiang': '浙江省', 'guangdong': '广东省', 'henan': '河南省', 'hunan': '湖南省', 'jiangxi': '江西省', 'anhui': '安徽省', 'chongqing': '重庆市', 'jiangsu': '江苏省', 'sichuan': '四川省', 'beijing': '北京市', 'heilongjiang': '黑龙江省', 'shandong': '山东省', 'ezhou': '鄂州市', 'xiaogan': '孝感市', 'huanggang': '黄冈市', 'suizhou': '随州市', 'jingzhou': '荆州市', 'huangshi': '黄石市', 'yichang': '宜昌市', 'xiangyang': '襄阳市', 'jingmen': '荆门市', 'xianning': '咸宁市', 'shiyan': '十堰市', 'xiantao': '仙桃市', 'tianmen': '天门市', 'enshi': '恩施市', 'qianjiang': '潜江市', 'wenzhou': '温州市', 'shenzhen': '深圳市', 'guangzhou': '广州市', 'shanghai': '上海市', 'xinyang': '信阳市', 'changsha': '长沙市', 'nanchang': '南昌市', 'hangzhou': '杭州市', 'ningbo': '宁波市', 'hefei': '合肥市', 'haerbin': '哈尔滨市', 'taizhou': '台州市', 'nanyang': '南阳市', 'nationall': '全国', 'hubeiall': '湖北省', 'nation_except': '全国_不含湖北', 'hubei_except': '湖北_不含武汉', 'tianjin': '天津市', 'shanxi': '陕西省', 'hebei': '河北省', 'korea': '韩国', 'japan': '日本', 'iran': '伊朗', 'italy': '意大利', 'france': '法国', 'america': '美国', 'global':'全球_不含中国', 'belgium':'比利时', 'germany':'德国', 'netherlands':'荷兰', 'sweden':'瑞典', 'spain':'西班牙', 'england':'英国', 'greece': '希腊','switzerland': '瑞士', 'canada':'加拿大', 'philippines':'菲律宾','singapore':'新加坡', 'australia':'澳大利亚', 'malaysia':'马来西亚','israel':'以色列', 'luxembourg':'卢森堡', 'austria':'奥地利', 'brazil':'巴西','czech':'捷克','ireland':'爱尔兰','finland':'芬兰','portugal':'葡萄牙','norway':'挪威','denmark':'丹麦','pakistan':'巴基斯坦','thailand':'泰国', 'russia':'俄罗斯','qatar':'卡塔尔','taiwan':'台湾省','slovenia':'斯洛文尼亚','estonia':'爱沙尼亚','hongkong':'香港'
+    'nation': '全国_不含湖北', 'hubei': '湖北_不含武汉', 'wuhan': '武汉市', 'zhejiang': '浙江省', 'guangdong': '广东省', 'henan': '河南省', 'hunan': '湖南省', 'jiangxi': '江西省', 'anhui': '安徽省', 'chongqing': '重庆市', 'jiangsu': '江苏省', 'sichuan': '四川省', 'beijing': '北京市', 'heilongjiang': '黑龙江省', 'shandong': '山东省', 'ezhou': '鄂州市', 'xiaogan': '孝感市', 'huanggang': '黄冈市', 'suizhou': '随州市', 'jingzhou': '荆州市', 'huangshi': '黄石市', 'yichang': '宜昌市', 'xiangyang': '襄阳市', 'jingmen': '荆门市', 'xianning': '咸宁市', 'shiyan': '十堰市', 'xiantao': '仙桃市', 'tianmen': '天门市', 'enshi': '恩施市', 'qianjiang': '潜江市', 'wenzhou': '温州市', 'shenzhen': '深圳市', 'guangzhou': '广州市', 'shanghai': '上海市', 'xinyang': '信阳市', 'changsha': '长沙市', 'nanchang': '南昌市', 'hangzhou': '杭州市', 'ningbo': '宁波市', 'hefei': '合肥市', 'haerbin': '哈尔滨市', 'taizhou': '台州市', 'nanyang': '南阳市', 'nationall': '全国', 'hubeiall': '湖北省', 'nation_except': '全国_不含湖北', 'hubei_except': '湖北_不含武汉', 'tianjin': '天津市', 'shanxi': '陕西省', 'hebei': '河北省', 'korea': '韩国', 'japan': '日本', 'iran': '伊朗', 'italy': '意大利', 'france': '法国', 'america': '美国', 'global':'全球_不含中国', 'belgium':'比利时', 'germany':'德国', 'netherlands':'荷兰', 'sweden':'瑞典', 'spain':'西班牙', 'england':'英国', 'greece': '希腊','switzerland': '瑞士', 'canada':'加拿大', 'philippines':'菲律宾','singapore':'新加坡', 'australia':'澳大利亚', 'malaysia':'马来西亚'
 }
 
 foreign = ['中国','韩国','日本','伊朗','意大利','法国','美国','比利时',\
 '德国','荷兰','瑞典','西班牙','英国','希腊','瑞士','加拿大',\
 '新加坡','澳大利亚','马来西亚','巴西','以色列','奥地利','巴西','捷克',\
-'葡萄牙','芬兰','爱尔兰','挪威','丹麦','巴基斯坦','泰国','俄罗斯','卡塔尔','斯洛文尼亚','爱沙尼亚','香港'
+'葡萄牙','芬兰','爱尔兰'#,'挪威','卢森堡',
 ]
 
 feed_root='feed/'
@@ -116,7 +116,6 @@ def worlddata():
     for csv in fileList:
         print(csv)
         name_ch,name_en,predictDate=get_name(csv)
-        print(predictDate," ************************")
         if name_ch is None:
             continue
         # print(name_en)
@@ -227,7 +226,6 @@ def future_ind(actual_date,predict_date):
             return ind+1
 
 def get_one(name,data,geo_data,pop):
-    print(name, geo_data.keys())
     node=geo_data[name]
     prop=node['properties']
     actual=data['actual']
@@ -265,12 +263,6 @@ def world_map_update():
         name=name_trans.get(name,name)
         data=predict[name]
         pop=float(glob_pop[name])
-        if name == "United States of America":
-            name = "USA"
-        if name == "United Kingdom":
-            name = "UK"
-        if name == "Czech Republic":
-            name = "Czech Rep."
         node=get_one(name,data,geo_data,pop)
         features.append(node)
     geojson={"type":"FeatureCollection","features":features}
